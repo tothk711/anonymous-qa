@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CZE7 Q&A</title>
+    <title>Weather Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,620 +14,593 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #1a1a2e;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: #eee;
-            min-height: 100vh;
-        }
-
-        /* Login Screen */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
             padding: 20px;
         }
 
-        .login-box {
-            background: #16213e;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 360px;
-        }
-
-        .login-box h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #e94560;
-            font-size: 1.8rem;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 14px 16px;
-            margin-bottom: 16px;
-            border: none;
-            border-radius: 8px;
-            background: #1a1a2e;
-            color: #eee;
-            font-size: 1rem;
-        }
-
-        .login-box input::placeholder {
-            color: #666;
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            background: #e94560;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .login-box button:hover {
-            background: #ff6b6b;
-        }
-
-        .login-error {
-            color: #ff6b6b;
-            text-align: center;
-            margin-bottom: 16px;
-            font-size: 0.9rem;
-        }
-
-        /* Main App */
-        .app-container {
-            display: none;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: #16213e;
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #0f3460;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .header h1 {
-            color: #e94560;
-            font-size: 1.4rem;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-badge {
-            background: #0f3460;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-
-        .user-badge.admin {
-            background: #e94560;
-            color: white;
-        }
-
-        .refresh-btn {
-            background: #0f3460;
-            border: none;
-            color: #aaa;
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .refresh-btn:hover {
-            background: #1a3a6e;
-            color: #eee;
-        }
-
-        .logout-btn {
-            background: transparent;
-            border: 1px solid #444;
-            color: #aaa;
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .logout-btn:hover {
-            border-color: #e94560;
-            color: #e94560;
-        }
-
-        /* Question Form */
-        .question-form {
-            background: #16213e;
-            padding: 20px 24px;
-            border-bottom: 1px solid #0f3460;
-        }
-
-        .question-form textarea {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            background: #1a1a2e;
-            color: #eee;
-            font-size: 1rem;
-            resize: vertical;
-            min-height: 80px;
-            font-family: inherit;
-        }
-
-        .question-form textarea::placeholder {
-            color: #666;
-        }
-
-        .question-form button {
-            margin-top: 12px;
-            padding: 10px 24px;
-            border: none;
-            border-radius: 6px;
-            background: #e94560;
-            color: white;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .question-form button:hover {
-            background: #ff6b6b;
-        }
-
-        /* Questions List */
-        .questions-list {
-            padding: 24px;
-            max-width: 1200px;
+        .container {
+            max-width: 1600px;
             margin: 0 auto;
         }
 
-        .no-questions {
+        header {
             text-align: center;
-            color: #666;
-            padding: 60px 20px;
-            font-size: 1.1rem;
+            margin-bottom: 30px;
         }
 
-        .question-card {
-            background: #16213e;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            overflow: hidden;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .question-side {
-            flex: 1;
-            min-width: 300px;
-            padding: 20px;
-            border-right: 1px solid #0f3460;
-            position: relative;
-        }
-
-        .answer-side {
-            flex: 1;
-            min-width: 300px;
-            padding: 20px;
-            background: #1a1a2e;
-            position: relative;
-        }
-
-        .question-text {
-            font-size: 1.05rem;
-            line-height: 1.6;
-            margin-bottom: 12px;
-            padding-right: 30px;
-        }
-
-        .question-time {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .answer-text {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: #aaa;
-            padding-right: 30px;
-        }
-
-        .answer-text.has-answer {
+        header h1 {
             color: #4ecca3;
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
 
-        .no-answer {
-            color: #555;
-            font-style: italic;
+        header .today-date {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
         }
 
-        /* Delete buttons */
-        .delete-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: transparent;
-            border: none;
-            color: #666;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: all 0.2s;
+        .top-controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
-        .delete-btn:hover {
-            background: #e94560;
-            color: white;
-        }
-
-        .delete-answer-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: transparent;
-            border: none;
-            color: #666;
-            cursor: pointer;
+        .refresh-btn {
+            padding: 10px 20px;
             font-size: 0.9rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        .delete-answer-btn:hover {
-            background: #e94560;
-            color: white;
-        }
-
-        /* Answer Form (Admin) */
-        .answer-form {
-            margin-top: 12px;
-        }
-
-        .answer-form textarea {
-            width: 100%;
-            padding: 12px;
             border: none;
-            border-radius: 6px;
-            background: #16213e;
-            color: #eee;
-            font-size: 0.95rem;
-            resize: vertical;
-            min-height: 60px;
-            font-family: inherit;
-        }
-
-        .answer-form textarea::placeholder {
-            color: #555;
-        }
-
-        .answer-form button {
-            margin-top: 8px;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             background: #4ecca3;
             color: #1a1a2e;
-            font-size: 0.85rem;
-            font-weight: 600;
             cursor: pointer;
+            font-weight: 600;
             transition: background 0.2s;
         }
 
-        .answer-form button:hover {
+        .refresh-btn:hover {
             background: #7ff5c9;
         }
 
-        .answer-meta {
-            font-size: 0.75rem;
-            color: #555;
-            margin-top: 8px;
+        .refresh-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
         }
 
-        /* Loading */
-        .loading {
+        .graphs-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1000px) {
+            .graphs-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-panel {
+            background: #16213e;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .chart-header label {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .chart-header select {
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 8px;
+            background: #0f3460;
+            color: #eee;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .chart-header select:hover {
+            background: #1a4a7a;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+        }
+
+        .legend-custom {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+
+        .legend-line {
+            width: 30px;
+            height: 0;
+            border-bottom-width: 3px;
+            border-bottom-style: solid;
+        }
+
+        .legend-line.dotted-light-red {
+            border-color: #ff9999;
+            border-bottom-style: dotted;
+        }
+
+        .legend-line.dashed-red {
+            border-color: #e94560;
+            border-bottom-style: dashed;
+        }
+
+        .legend-line.solid-green {
+            border-color: #4ecca3;
+            border-bottom-width: 5px;
+        }
+
+        .legend-line.dashed-light-green {
+            border-color: #90EE90;
+            border-bottom-style: dashed;
+        }
+
+        .status-bar {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .timezone-note {
+            text-align: center;
+            margin-top: 8px;
+            color: #888;
+            font-size: 0.75rem;
+            font-style: italic;
+        }
+
+        .error {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: #e94560;
+            background: rgba(233, 69, 96, 0.1);
+            border-radius: 12px;
         }
 
-        /* Responsive */
-        @media (max-width: 700px) {
-            .question-side, .answer-side {
-                min-width: 100%;
+        @media (max-width: 600px) {
+            .chart-panel {
+                padding: 15px;
             }
             
-            .question-side {
-                border-right: none;
-                border-bottom: 1px solid #0f3460;
+            header h1 {
+                font-size: 1.5rem;
             }
 
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
+            .legend-custom {
+                gap: 8px;
+            }
+
+            .legend-item {
+                font-size: 0.7rem;
+            }
+
+            .chart-wrapper {
+                height: 300px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div class="login-container" id="loginScreen">
-        <div class="login-box">
-            <h1>🔐 CZE7 Q&A</h1>
-            <div class="login-error" id="loginError"></div>
-            <input type="text" id="username" placeholder="Username" autocomplete="off">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="login()">Log In</button>
-        </div>
-    </div>
+    <div class="container">
+        <header>
+            <h1>🌡️ Weather Comparison</h1>
+            <div class="today-date" id="todayDate">Loading...</div>
+        </header>
 
-    <!-- Main App -->
-    <div class="app-container" id="appContainer">
-        <div class="header">
-            <h1>📝 Anonymous Q&A</h1>
-            <div class="header-right">
-                <span class="user-badge" id="userBadge">Guest</span>
-                <button class="refresh-btn" onclick="loadQuestions()">🔄 Refresh</button>
-                <button class="logout-btn" onclick="logout()">Log Out</button>
+        <div class="top-controls">
+            <button class="refresh-btn" onclick="refreshData()">🔄 Refresh All Data</button>
+        </div>
+
+        <div class="graphs-container">
+            <!-- Left Graph - Czech Cities -->
+            <div class="chart-panel">
+                <div class="chart-header">
+                    <label for="leftCitySelect">City:</label>
+                    <select id="leftCitySelect"></select>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="leftChart"></canvas>
+                </div>
+                <div class="legend-custom">
+                    <div class="legend-item">
+                        <div class="legend-line dotted-light-red"></div>
+                        <span>2 Days Ago</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line dashed-red"></div>
+                        <span>Yesterday</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line solid-green"></div>
+                        <span>Today</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line dashed-light-green"></div>
+                        <span>Tomorrow</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Graph - Other Cities -->
+            <div class="chart-panel">
+                <div class="chart-header">
+                    <label for="rightCitySelect">City:</label>
+                    <select id="rightCitySelect"></select>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="rightChart"></canvas>
+                </div>
+                <div class="legend-custom">
+                    <div class="legend-item">
+                        <div class="legend-line dotted-light-red"></div>
+                        <span>2 Days Ago</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line dashed-red"></div>
+                        <span>Yesterday</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line solid-green"></div>
+                        <span>Today</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line dashed-light-green"></div>
+                        <span>Tomorrow</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="question-form">
-            <textarea id="questionInput" placeholder="Ask a question anonymously..."></textarea>
-            <button onclick="submitQuestion()">Submit Question</button>
+        <div class="status-bar" id="statusBar">
+            Loading...
         </div>
-
-        <div class="questions-list" id="questionsList">
-            <div class="loading">Loading questions...</div>
+        <div class="timezone-note">
+            All times are in Central European Time (CET/CEST)
         </div>
     </div>
 
     <script>
-        // State
-        let currentUser = null; // 'guest' or 'admin'
-        let credentials = null; // base64 encoded
-        let questions = [];
+        // City groups
+        const czechCities = ['Czechia', 'Prague', 'Brno', 'Plzen', 'Ostrava'];
+        const czechCitiesForAverage = ['Prague', 'Brno', 'Plzen', 'Ostrava'];
+        const otherCities = ['Budapest', 'Debrecen', 'Berlin', 'Munich'];
 
-        // Get auth header
-        function getAuthHeader() {
-            return { 'Authorization': 'Basic ' + credentials };
+        // Charts
+        let leftChart = null;
+        let rightChart = null;
+
+        // Current selections
+        let leftCity = 'Czechia';
+        let rightCity = 'Budapest';
+
+        // Cache for city data (for calculating Czechia average)
+        let cityDataCache = {};
+
+        // Initialize
+        async function init() {
+            updateTodayDate();
+            setupDropdowns();
+            await Promise.all([
+                loadWeatherData('left', leftCity),
+                loadWeatherData('right', rightCity)
+            ]);
         }
 
-        // Login
-        async function login() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const errorEl = document.getElementById('loginError');
+        // Update today's date in header
+        function updateTodayDate() {
+            const today = new Date();
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayName = days[today.getDay()];
+            const dateStr = today.toISOString().split('T')[0];
+            document.getElementById('todayDate').textContent = `Today: ${dayName} ${dateStr}`;
+        }
 
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+        // Setup dropdowns
+        function setupDropdowns() {
+            const leftSelect = document.getElementById('leftCitySelect');
+            const rightSelect = document.getElementById('rightCitySelect');
+
+            // Czech cities on left (with Czechia average)
+            leftSelect.innerHTML = czechCities.map(city => 
+                `<option value="${city}" ${city === leftCity ? 'selected' : ''}>${city}</option>`
+            ).join('');
+
+            // Other cities on right
+            rightSelect.innerHTML = otherCities.map(city => 
+                `<option value="${city}" ${city === rightCity ? 'selected' : ''}>${city}</option>`
+            ).join('');
+
+            leftSelect.addEventListener('change', (e) => {
+                leftCity = e.target.value;
+                loadWeatherData('left', leftCity);
+            });
+
+            rightSelect.addEventListener('change', (e) => {
+                rightCity = e.target.value;
+                loadWeatherData('right', rightCity);
+            });
+        }
+
+        // Calculate average of multiple city data
+        function calculateCzechiaAverage(citiesData) {
+            const result = {
+                twoDaysAgo: { date: citiesData[0].twoDaysAgo.date, temps: [] },
+                yesterday: { date: citiesData[0].yesterday.date, temps: [] },
+                today: { date: citiesData[0].today.date, temps: [] },
+                tomorrow: { date: citiesData[0].tomorrow.date, temps: [] },
+                updatedAt: citiesData[0].updatedAt
+            };
+
+            // Calculate average for each hour
+            for (let hour = 0; hour < 24; hour++) {
+                ['twoDaysAgo', 'yesterday', 'today', 'tomorrow'].forEach(day => {
+                    let sum = 0;
+                    let count = 0;
+                    citiesData.forEach(cityData => {
+                        if (cityData[day].temps[hour] !== null) {
+                            sum += cityData[day].temps[hour];
+                            count++;
+                        }
+                    });
+                    result[day].temps[hour] = count > 0 ? sum / count : null;
                 });
+            }
 
-                const data = await res.json();
+            return result;
+        }
 
-                if (data.success) {
-                    currentUser = data.role;
-                    credentials = btoa(username + ':' + password);
-                    showApp();
+        // Load weather data for a chart
+        async function loadWeatherData(side, cityName) {
+            try {
+                let data;
+
+                if (cityName === 'Czechia') {
+                    // Fetch all Czech cities and calculate average
+                    const citiesData = await Promise.all(
+                        czechCitiesForAverage.map(async (city) => {
+                            if (cityDataCache[city]) {
+                                return cityDataCache[city];
+                            }
+                            const res = await fetch(`/api/weather/${city}`);
+                            const cityData = await res.json();
+                            cityDataCache[city] = cityData;
+                            return cityData;
+                        })
+                    );
+                    data = calculateCzechiaAverage(citiesData);
                 } else {
-                    errorEl.textContent = 'Invalid credentials. Try again.';
+                    const res = await fetch(`/api/weather/${cityName}`);
+                    data = await res.json();
+                    cityDataCache[cityName] = data;
                 }
+                
+                renderChart(side, cityName, data);
+                updateStatus(data.updatedAt);
             } catch (err) {
-                errorEl.textContent = 'Connection error. Try again.';
+                console.error(`Error loading weather data for ${cityName}:`, err);
             }
         }
 
-        // Handle Enter key
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('password').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') login();
-            });
-            document.getElementById('username').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') document.getElementById('password').focus();
-            });
-        });
+        // Update status bar
+        function updateStatus(updatedAt) {
+            const lastUpdate = updatedAt 
+                ? new Date(updatedAt).toLocaleString() 
+                : 'Unknown';
+            document.getElementById('statusBar').textContent = 
+                `Last updated: ${lastUpdate}`;
+        }
 
-        // Show main app
-        function showApp() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'block';
+        // Refresh data from API
+        async function refreshData() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.textContent = '⏳ Fetching...';
+            btn.disabled = true;
             
-            const badge = document.getElementById('userBadge');
-            if (currentUser === 'admin') {
-                badge.textContent = '🔑 Admin';
-                badge.classList.add('admin');
+            // Clear cache
+            cityDataCache = {};
+            
+            try {
+                await fetch('/api/fetch', { method: 'POST' });
+                await Promise.all([
+                    loadWeatherData('left', leftCity),
+                    loadWeatherData('right', rightCity)
+                ]);
+            } catch (err) {
+                console.error('Error refreshing data:', err);
+                alert('Error refreshing data. Try again.');
+            } finally {
+                btn.textContent = '🔄 Refresh All Data';
+                btn.disabled = false;
+            }
+        }
+
+        // Render chart
+        function renderChart(side, cityName, data) {
+            const canvasId = side === 'left' ? 'leftChart' : 'rightChart';
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            const hours = Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+            
+            // Destroy existing chart
+            if (side === 'left' && leftChart) {
+                leftChart.destroy();
+            } else if (side === 'right' && rightChart) {
+                rightChart.destroy();
+            }
+
+            const displayName = cityName === 'Czechia' ? 'Czechia (Average)' : cityName;
+
+            const newChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hours,
+                    datasets: [
+                        {
+                            // 2 Days Ago - dotted light red
+                            label: `2 Days Ago (${data.twoDaysAgo.date})`,
+                            data: data.twoDaysAgo.temps,
+                            borderColor: '#ff9999',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [2, 4],
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                        },
+                        {
+                            // Yesterday - dashed heavy red (longer dashes)
+                            label: `Yesterday (${data.yesterday.date})`,
+                            data: data.yesterday.temps,
+                            borderColor: '#e94560',
+                            backgroundColor: 'transparent',
+                            borderWidth: 3,
+                            borderDash: [10, 5],
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                        },
+                        {
+                            // Today - solid thick green
+                            label: `Today (${data.today.date})`,
+                            data: data.today.temps,
+                            borderColor: '#4ecca3',
+                            backgroundColor: 'rgba(78, 204, 163, 0.1)',
+                            borderWidth: 5,
+                            tension: 0.3,
+                            pointRadius: 2,
+                            pointHoverRadius: 6,
+                        },
+                        {
+                            // Tomorrow - dashed light green (longer dashes)
+                            label: `Tomorrow (${data.tomorrow.date})`,
+                            data: data.tomorrow.temps,
+                            borderColor: '#90EE90',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [10, 5],
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                        },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                            backgroundColor: '#16213e',
+                            titleColor: '#fff',
+                            bodyColor: '#ccc',
+                            borderColor: '#0f3460',
+                            borderWidth: 1,
+                            padding: 16,
+                            titleFont: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 14
+                            },
+                            bodySpacing: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.parsed.y !== null) {
+                                        return `${context.dataset.label}: ${context.parsed.y.toFixed(1)}°C`;
+                                    }
+                                    return null;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: `Temperature in ${displayName}`,
+                            color: '#fff',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                bottom: 15
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                            },
+                            ticks: {
+                                color: '#888',
+                                maxTicksLimit: 8,
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                            },
+                            ticks: {
+                                color: '#888',
+                                font: {
+                                    size: 10
+                                },
+                                callback: function(value) {
+                                    return value + '°C';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (side === 'left') {
+                leftChart = newChart;
             } else {
-                badge.textContent = '👤 Guest';
-                badge.classList.remove('admin');
-            }
-            
-            loadQuestions();
-        }
-
-        // Logout
-        function logout() {
-            currentUser = null;
-            credentials = null;
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('appContainer').style.display = 'none';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('loginError').textContent = '';
-        }
-
-        // Load questions from server
-        async function loadQuestions() {
-            try {
-                const res = await fetch('/api/questions', {
-                    headers: getAuthHeader()
-                });
-                questions = await res.json();
-                renderQuestions();
-            } catch (err) {
-                document.getElementById('questionsList').innerHTML = 
-                    '<div class="loading">Error loading questions. Try refreshing.</div>';
+                rightChart = newChart;
             }
         }
 
-        // Submit question
-        async function submitQuestion() {
-            const input = document.getElementById('questionInput');
-            const text = input.value.trim();
-            
-            if (!text) return;
-
-            try {
-                await fetch('/api/questions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...getAuthHeader()
-                    },
-                    body: JSON.stringify({ text })
-                });
-                input.value = '';
-                loadQuestions();
-            } catch (err) {
-                alert('Error submitting question. Try again.');
-            }
-        }
-
-        // Submit answer (admin only)
-        async function submitAnswer(questionId) {
-            const textarea = document.getElementById(`answer-${questionId}`);
-            const text = textarea.value.trim();
-            
-            if (!text) return;
-
-            try {
-                await fetch(`/api/questions/${questionId}/answer`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...getAuthHeader()
-                    },
-                    body: JSON.stringify({ answer: text })
-                });
-                loadQuestions();
-            } catch (err) {
-                alert('Error submitting answer. Try again.');
-            }
-        }
-
-        // Delete question (admin only)
-        async function deleteQuestion(questionId) {
-            if (!confirm('Delete this question and its answer?')) return;
-
-            try {
-                await fetch(`/api/questions/${questionId}`, {
-                    method: 'DELETE',
-                    headers: getAuthHeader()
-                });
-                loadQuestions();
-            } catch (err) {
-                alert('Error deleting question. Try again.');
-            }
-        }
-
-        // Delete answer (admin only)
-        async function deleteAnswer(questionId) {
-            if (!confirm('Delete this answer?')) return;
-
-            try {
-                await fetch(`/api/questions/${questionId}/answer`, {
-                    method: 'DELETE',
-                    headers: getAuthHeader()
-                });
-                loadQuestions();
-            } catch (err) {
-                alert('Error deleting answer. Try again.');
-            }
-        }
-
-        // Format timestamp
-        function formatTime(isoString) {
-            if (!isoString) return '';
-            const date = new Date(isoString);
-            return date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        // Render questions
-        function renderQuestions() {
-            const container = document.getElementById('questionsList');
-            
-            if (questions.length === 0) {
-                container.innerHTML = '<div class="no-questions">No questions yet. Be the first to ask!</div>';
-                return;
-            }
-
-            container.innerHTML = questions.map(q => `
-                <div class="question-card">
-                    <div class="question-side">
-                        ${currentUser === 'admin' ? `
-                            <button class="delete-btn" onclick="deleteQuestion(${q.id})" title="Delete question">🗑</button>
-                        ` : ''}
-                        <div class="question-text">${escapeHtml(q.text)}</div>
-                        <div class="question-time">Asked ${formatTime(q.created_at)}</div>
-                    </div>
-                    <div class="answer-side">
-                        ${q.answer ? `
-                            ${currentUser === 'admin' ? `
-                                <button class="delete-answer-btn" onclick="deleteAnswer(${q.id})" title="Delete answer">🗑</button>
-                            ` : ''}
-                            <div class="answer-text has-answer">${escapeHtml(q.answer)}</div>
-                            <div class="answer-meta">Answered ${formatTime(q.answered_at)}</div>
-                        ` : `
-                            <div class="no-answer">No answer yet</div>
-                        `}
-                        ${currentUser === 'admin' ? `
-                            <div class="answer-form">
-                                <textarea id="answer-${q.id}" placeholder="Write an answer...">${q.answer || ''}</textarea>
-                                <button onclick="submitAnswer(${q.id})">${q.answer ? 'Update Answer' : 'Submit Answer'}</button>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Escape HTML to prevent XSS
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML.replace(/\n/g, '<br>');
-        }
+        // Start the app
+        init();
     </script>
 </body>
 </html>
